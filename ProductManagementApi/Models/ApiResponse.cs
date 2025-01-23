@@ -12,7 +12,7 @@
             Errors = new List<string>(); ;
         }
 
-        public ApiResponse(bool success, string message, T data = default, List<string>? errors = null)
+        public ApiResponse(bool success, string message, T? data = default, List<string>? errors = null)
         {
             Success = success;
             Message = message;

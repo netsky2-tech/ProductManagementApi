@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProductManagementApi.DTOs;
+using ProductManagementApi.DTOs.Products;
 using ProductManagementApi.Models;
+using ProductManagementApi.Services.Interfaces;
+using ProductManagementApi.Utilities;
+using System.Transactions;
 
 namespace ProductManagementApi.Controllers
 {
@@ -8,40 +13,28 @@ namespace ProductManagementApi.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
+        private readonly IProductService _productService;
         private readonly AppDbContext _context;
-        public ProductsController(AppDbContext context)
+        public ProductsController(IProductService productService, AppDbContext context)
         {
+            _productService = productService;
             _context = context;
         }
 
         // Get Products list with filters
         [HttpGet]
-        public async Task<IActionResult> GetProducts([FromQuery] string name, [FromQuery] int? categoryId)
+        public async Task<IActionResult> GetProducts([FromQuery] string? name, [FromQuery] int? categoryId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
+            if (pageNumber <= 0 || pageSize <= 0)
+            {
+                return BadRequest(new ApiResponse<object>(false, "Parámetros de paginación inválidos."));
+            }
+
             try
             {
-                var query = _context.Products.Include(p => p.Category)
-                .Include(p => p.UnitOfMeasurement)
-                .AsQueryable();
+                var result = await _productService.GetProductsAsync(name, categoryId, pageNumber, pageSize);
+                return Ok(new ApiResponse<PaginatedResponse<ProductDto>>(true, "Productos obtenidos correctamente", result));
 
-                if (!string.IsNullOrEmpty(name))
-                {
-                    query = query.Where(p => p.Name.Contains(name));
-                }
-
-                if (categoryId.HasValue)
-                {
-                    query = query.Where(p => p.CategoryId == categoryId.Value);
-                }
-
-                var products = await query.ToListAsync();
-
-                if (products == null || products.Count == 0)
-                {
-                    return NotFound(new ApiResponse<object>(false, "No se encontraron productos."));
-                }
-
-                return Ok(new ApiResponse<IEnumerable<Product>>(true, "Productos obtenidos correctamente", products));
             }
             catch(Exception ex)
             {
@@ -51,20 +44,34 @@ namespace ProductManagementApi.Controllers
 
         // Create new product
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] Product product)
+        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto productDto)
         {
-            if (product == null)
+            if (productDto == null)
             {
-                return BadRequest();
+                return BadRequest(new ApiResponse<object>(false, "Los datos del producto no pueden ser nulos."));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse<object>(false, "Datos inválidos.", null, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList()));
             }
 
             try
             {
-                _context.Products.Add(product);
-                await _context.SaveChangesAsync();
+                var existingProduct = await _productService.GetProductByNameAsync(productDto.Name);
+                if(existingProduct != null)
+                {
+                    return Conflict(new ApiResponse<object>(false, "Ya existe un producto con el mismo nombre."));
+                }
 
-                return CreatedAtAction(nameof(GetProducts), new { productId = product.ProductId }, 
-                    new ApiResponse<Product>(true, "Producto creado exitosamente", product));
+                using var transaction = await _context.Database.BeginTransactionAsync();
+
+                var product = await _productService.CreateProductAsync(productDto);
+
+                await transaction.CommitAsync();
+
+                return Ok(new ApiResponse<ProductDto>(true, "Producto creado exitosamente", product));
+
             }
             catch(DbUpdateException ex)
             {
@@ -79,24 +86,32 @@ namespace ProductManagementApi.Controllers
 
         // Update a product
         [HttpPut("{productId}")]
-        public async Task<IActionResult> UpdateProduct(int productId, [FromBody] Product product)
+        public async Task<IActionResult> UpdateProduct(int productId, [FromBody] ProductUpdateDto productDto)
         {
-            if(productId != product.ProductId)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(new ApiResponse<object>(false, "El ID del producto no coincide con ninguno de los guardados"));
+                return BadRequest(new ApiResponse<object>(false, "Datos inválidos.", null, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList()));
+            }
+
+            if (productId != productDto.ProductId)
+            {
+                return BadRequest(new ApiResponse<object>(false, "El ID del producto no coincide con el enviado."));
             }
 
             try
             {
-                _context.Entry(product).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
+                await _productService.UpdateProductAsync(productDto);
 
                 return Ok(new ApiResponse<object>(true, "Producto actualizado correctamente"));
 
             }
-            catch(Exception ex)
+            catch (DbUpdateConcurrencyException)
             {
-                return StatusCode(500, new ApiResponse<object>(false, "Ocurrió un error al actualizar el producto", null, new List<string> { ex.Message }));
+                return NotFound(new ApiResponse<object>(false, "Producto no encontrado."));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>(false, "Ocurrió un error al actualizar el producto.", null, new List<string> { ex.Message }));
             }
 
         }
@@ -105,23 +120,21 @@ namespace ProductManagementApi.Controllers
         [HttpDelete("{productId}")]
         public async Task<IActionResult> DeleteProduct(int productId)
         {
-            var product = await _context.Products.FindAsync(productId);
-            if(product == null)
-            {
-                return NotFound(new ApiResponse<object>(false, "Producto no encontrado"));
-            }
-
             try
             {
 
-                _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
+                await _productService.DeleteProductAsync(productId);
 
                 return Ok(new ApiResponse<object>(true, "Producto eliminado correctamente."));
 
-            }catch(Exception ex)
+            }
+            catch (KeyNotFoundException)
             {
-                return StatusCode(500, new ApiResponse<object>(false, "Ocurrió un error al eliminar el producto", null, new List<string> { ex.Message }));
+                return NotFound(new ApiResponse<object>(false, "Producto no encontrado."));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>(false, "Ocurrió un error al eliminar el producto.", null, new List<string> { ex.Message }));
             }
         }
     }

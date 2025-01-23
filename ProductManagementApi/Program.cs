@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using ProductManagementApi;
+using ProductManagementApi.Services.Implementations;
+using ProductManagementApi.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +11,26 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Habilitar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalHost3000", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
+// Connection string - AppDbcontext
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Add service implementation
+builder.Services.AddScoped<IProductService, ProductService>();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 var app = builder.Build();
 
@@ -18,6 +43,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowLocalhost3000");
 app.UseAuthorization();
 
 app.MapControllers();
