@@ -33,6 +33,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Add service implementation
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IUnitOfMeasurementService, UnitOfMeasurementService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));

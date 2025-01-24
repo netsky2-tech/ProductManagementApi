@@ -27,7 +27,7 @@ namespace ProductManagementApi.Controllers
         {
             if (pageNumber <= 0 || pageSize <= 0)
             {
-                return BadRequest(new ApiResponse<object>(false, "Invalid pagination parameters."));
+                return BadRequest(new ApiResponse<object>(false, "Parámetros de paginación inválidos."));
             }
 
             try

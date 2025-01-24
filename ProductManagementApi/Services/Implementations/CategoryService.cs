@@ -4,7 +4,6 @@ using ProductManagementApi.DTOs.Categories;
 using ProductManagementApi.Models;
 using ProductManagementApi.Services.Interfaces;
 using ProductManagementApi.Utilities;
-using SysServiciosNHME.Models;
 
 namespace ProductManagementApi.Services.Implementations
 {

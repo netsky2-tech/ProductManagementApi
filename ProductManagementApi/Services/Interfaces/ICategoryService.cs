@@ -2,7 +2,6 @@
 using ProductManagementApi.DTOs.Categories;
 using ProductManagementApi.Models;
 using ProductManagementApi.Utilities;
-using SysServiciosNHME.Models;
 
 namespace ProductManagementApi.Services.Interfaces
 {
