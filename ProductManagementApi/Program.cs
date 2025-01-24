@@ -13,13 +13,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Habilitar CORS
+
+string corsPolicyName = "AllowSpecificOrigins";
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalHost3000", policy =>
+    options.AddPolicy(corsPolicyName, policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
-        .AllowAnyHeader()
-        .AllowAnyMethod();
+        policy.AllowAnyHeader()
+        .AllowAnyMethod()
+        .SetIsOriginAllowed(origin => true)
+        .AllowCredentials();
     });
 });
 
@@ -28,6 +32,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // Add service implementation
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -43,7 +48,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowLocalhost3000");
+app.UseCors(corsPolicyName);
+
 app.UseAuthorization();
 
 app.MapControllers();
