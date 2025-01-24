@@ -85,7 +85,7 @@ namespace ProductManagementApi.Controllers
         }
 
         // Update a unit of measurement
-        [HttpPut]
+        [HttpPut("{unitOfMeasurementId}")]
         public async Task<IActionResult> UpdateUnitOfMeasurement([FromBody] UnitOfMeasurementUpdateDto unitOfMeasurementDto)
         {
             if (unitOfMeasurementDto == null)

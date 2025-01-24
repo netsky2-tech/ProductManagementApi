@@ -93,7 +93,7 @@ namespace ProductManagementApi.Controllers
                 return BadRequest(new ApiResponse<object>(false, "Datos inválidos.", null, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList()));
             }
 
-            if (productId != productDto.ProductId)
+            if (productId != productDto.Id)
             {
                 return BadRequest(new ApiResponse<object>(false, "El ID del producto no coincide con el enviado."));
             }

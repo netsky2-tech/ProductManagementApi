@@ -30,7 +30,7 @@ namespace ProductManagementApi.Services.Implementations
 
             return new ProductDto
             {
-                ProductId = product.ProductId,
+                Id = product.ProductId,
                 Name = product.Name,
                 CategoryId = product.CategoryId,
                 CategoryName = (await _context.Categories.FindAsync(product.CategoryId))?.Name,
@@ -72,7 +72,7 @@ namespace ProductManagementApi.Services.Implementations
 
             var products = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(p => new ProductDto
             {
-                ProductId = p.ProductId,
+                Id = p.ProductId,
                 Name = p.Name,
                 CategoryId = p.CategoryId,
                 CategoryName = p.Category.Name,
@@ -92,7 +92,7 @@ namespace ProductManagementApi.Services.Implementations
 
         public async Task UpdateProductAsync(ProductUpdateDto productDto)
         {
-            var product = await _context.Products.FindAsync(productDto.ProductId);
+            var product = await _context.Products.FindAsync(productDto.Id);
 
             if(product == null)
             {

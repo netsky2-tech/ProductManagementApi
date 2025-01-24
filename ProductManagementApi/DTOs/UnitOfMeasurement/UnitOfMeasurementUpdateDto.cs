@@ -2,7 +2,7 @@
 {
     public class UnitOfMeasurementUpdateDto
     {
-        public int UnitOfMeasurementId { get; set; }
+        public int Id { get; set; }
         public required string Name { get; set; }
         public string? Abbreviation { get; set; }
     }

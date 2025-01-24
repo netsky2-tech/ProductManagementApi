@@ -29,7 +29,7 @@ namespace ProductManagementApi.Services.Implementations
 
             return new UnitOfMeasurementDto
             {
-                UnitOfMeasurementId = unitOfMeasurement.UnitOfMeasurementId,
+                Id = unitOfMeasurement.UnitOfMeasurementId,
                 Name = unitOfMeasurement.Name,
                 Abbreviation = unitOfMeasurement.Abbreviation
             };
@@ -83,7 +83,7 @@ namespace ProductManagementApi.Services.Implementations
                 .Take(pageSize)
                 .Select(u => new UnitOfMeasurementDto
                 {
-                    UnitOfMeasurementId = u.UnitOfMeasurementId,
+                    Id = u.UnitOfMeasurementId,
                     Name = u.Name,
                     Abbreviation = u.Abbreviation
                 })
@@ -100,7 +100,7 @@ namespace ProductManagementApi.Services.Implementations
 
         public async Task UpdateUnitOfMeasurementAsync(UnitOfMeasurementUpdateDto unitOfMeasurementDto)
         {
-            var unit = await _context.UnitsOfMeasurement.FindAsync(unitOfMeasurementDto.UnitOfMeasurementId);
+            var unit = await _context.UnitsOfMeasurement.FindAsync(unitOfMeasurementDto.Id);
 
             if (unit == null) {
 

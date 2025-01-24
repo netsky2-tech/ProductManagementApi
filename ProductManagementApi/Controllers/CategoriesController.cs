@@ -82,7 +82,7 @@ namespace ProductManagementApi.Controllers
         }
 
         //Update a category
-        [HttpPut("categoryId")]
+        [HttpPut("{categoryId}")]
         public async Task<IActionResult> UpdateCategory([FromBody] CategoryUpdateDto categoryDto)
         {
             if (categoryDto == null)

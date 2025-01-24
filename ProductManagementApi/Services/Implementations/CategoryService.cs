@@ -28,7 +28,7 @@ namespace ProductManagementApi.Services.Implementations
 
             return new CategoryDto
             {
-                CategoryId = category.CategoryId,
+                Id = category.CategoryId,
                 Name = category.Name,
                 Description = category.Description
             };
@@ -64,7 +64,7 @@ namespace ProductManagementApi.Services.Implementations
                 .Take(pageSize)
                 .Select(c => new CategoryDto
                 {
-                    CategoryId = c.CategoryId,
+                    Id = c.CategoryId,
                     Name = c.Name,
                     Description = c.Description
                 })
@@ -100,7 +100,7 @@ namespace ProductManagementApi.Services.Implementations
 
         public async Task UpdateCategoryAsync(CategoryUpdateDto categoryDto)
         {
-            var category = await _context.Categories.FindAsync(categoryDto.CategoryId);
+            var category = await _context.Categories.FindAsync(categoryDto.Id);
 
             if (category == null)
             {
