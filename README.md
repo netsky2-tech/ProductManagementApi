@@ -1,8 +1,8 @@
-# Introducción
+# IntroducciÃ³n
 
-Este es una API desarrollada en .NET Core 8 para la gestión de productos, categorias y unidades de medida
+Este es una API desarrollada en .NET Core 8 para la gestiÃ³n de productos, categorias y unidades de medida
 
-El objetivo principal es demostrar habilidades en la implementación de APIs con buenas prácticas y diseño profesional.
+El objetivo principal es demostrar habilidades en la implementaciÃ³n de APIs con buenas prÃ¡cticas y diseÃ±o profesional.
 
 ---
 
@@ -12,7 +12,7 @@ Antes de iniciar asegurate de tener instalado los siguientes requisitos:
 
 - [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [SQL Server](https://www.microsoft.com/es-es/sql-server/sql-server-downloads)
-- Un editor de código como [Visual Studio Code](https://code.visualstudio.com/) o [Visual Studio](https://visualstudio.microsoft.com/)
+- Un editor de cÃ³digo como [Visual Studio Code](https://code.visualstudio.com/) o [Visual Studio](https://visualstudio.microsoft.com/)
 
 ---
 
@@ -24,9 +24,9 @@ cd ProductManagementApi
 
 # 2. Configurar la base de datos
 
-Asegúrate de tener un servidor SQL Server en ejecución
+AsegÃºrate de tener un servidor SQL Server en ejecuciÃ³n
 
-Modifica la cadena de conexión en el archivo appsettings.json ubicado en la raíz del proyecto  
+Modifica la cadena de conexiÃ³n en el archivo appsettings.json ubicado en la raÃ­z del proyecto  
 
 # 3. Instalas las dependencias necesarias necesarias
 
@@ -34,7 +34,7 @@ Modifica la cadena de conexión en el archivo appsettings.json ubicado en la raíz
 
 *dotnet tool install --global dotnet-ef**
 
-Verificar si la instalación fue correcta con 
+Verificar si la instalaciÃ³n fue correcta con 
 
 *dotnet ef --version*
 
@@ -43,6 +43,7 @@ Verificar si la instalación fue correcta con
 Ejecuta los siguientes comandos de dotnet en la terminal para aplicar las migraciones
 
 dotnet ef migrations add InitialCreate
+
 dotnet ef database update
 
 
@@ -50,5 +51,5 @@ dotnet ef database update
 
 Ejecuta el proyecto 
 
-La api estará disponible en https://localhost:7078
+La api estarÃ¡ disponible en https://localhost:7078
 
