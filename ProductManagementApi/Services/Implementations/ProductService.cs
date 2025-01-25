@@ -34,6 +34,7 @@ namespace ProductManagementApi.Services.Implementations
                 Name = product.Name,
                 CategoryId = product.CategoryId,
                 CategoryName = (await _context.Categories.FindAsync(product.CategoryId))?.Name,
+                UnitOfMeasurementId = product.UnitOfMeasurementId,
                 UnitOfMeasurementName = (await _context.UnitsOfMeasurement.FindAsync(product.UnitOfMeasurementId))?.Name,
                 Price = product.Price
             };
@@ -60,7 +61,9 @@ namespace ProductManagementApi.Services.Implementations
 
             if (!string.IsNullOrEmpty(name))
             {
-                query = query.Where(p => p.Name.Contains(name));
+                query = query.Where(p => p.Name.Contains(name) || 
+                p.Category.Name.Contains(name) 
+                || p.UnitOfMeasurement.Name.Contains(name));
             }
 
             if (categoryId.HasValue)
@@ -76,6 +79,7 @@ namespace ProductManagementApi.Services.Implementations
                 Name = p.Name,
                 CategoryId = p.CategoryId,
                 CategoryName = p.Category.Name,
+                UnitOfMeasurementId = p.UnitOfMeasurementId,
                 UnitOfMeasurementName = p.UnitOfMeasurement.Name,
                 Price = p.Price
             }).ToListAsync();
